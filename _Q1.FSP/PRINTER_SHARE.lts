@@ -1,0 +1,16 @@
+PRINTER = (
+	print -> PRINTER
+).
+
+User = (
+	print -> User
+).
+
+Admin = (
+	manage -> Admin
+).
+
+
+|| PRINTER_SHARE = (
+	{ user1: User || user2: User || admin: Admin } + PRINTER
+).
