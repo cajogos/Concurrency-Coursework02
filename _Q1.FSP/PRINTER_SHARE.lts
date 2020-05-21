@@ -1,16 +1,29 @@
+const MAX_DOCS = 3
+range DOCS_RANGE = 0..MAX_DOCS
+
+// DOC_ID
+
 PRINTER = (
-	print -> PRINTER
+	acquire -> (
+		print -> release -> PRINTER
+		| cancel -> release -> PRINTER
+		| service -> release -> PRINTER
+	)
 ).
 
 User = (
-	print -> User
+	printer.acquire -> (
+		printer.print[DOCS_RANGE] -> printer.release -> User
+		| printer.cancel[DOCS_RANGE] -> printer.release -> User
+	)
 ).
 
 Admin = (
-	manage -> Admin
+	printer.acquire -> printer.service -> printer.release -> Admin
 ).
 
 
 || PRINTER_SHARE = (
-	{ user1: User || user2: User || admin: Admin } + PRINTER
+	user1: User || user2: User || admin: Admin
+	|| { user1, user2, admin }::printer:PRINTER
 ).
