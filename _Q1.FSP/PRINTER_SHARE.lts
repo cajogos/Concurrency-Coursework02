@@ -8,7 +8,10 @@ PRINTER = (
 ).
 
 User = (
-	acquire -> print -> release -> User
+	acquire -> (
+		print[DOCS_RANGE] -> release -> User
+		| cancel[DOCS_RANGE] -> release -> User
+	)
 ).
 
 Admin = (
