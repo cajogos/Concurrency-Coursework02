@@ -32,6 +32,8 @@ Only operations permissible are:
   - Only one operation succeeds and the others get blocked.
 - **Waiting** within a `claim` operation.
   - "blocking wait" is preferred to "busy wait" because of efficiency.
-  - 
 - **Blocking and Waking** `claiming` processes.
+  - "blocking" of a process claiming a locked semaphore.
+  - "wake-up" strategy for blocked processes on a newly unlocked semaphore.
+  - FIFO queue with each semaphore.
 

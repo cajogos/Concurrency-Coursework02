@@ -1,0 +1,53 @@
+Program Readers_Writers
+{
+    int Number_of_Readers = 0;
+
+    process Reader(BinarySemaphore mutex, BinarySemaphore writing)
+    {
+        while ( true )
+        {
+            mutex.claim(); // Enter CS
+
+            Number_of_Readers++;
+            // 1st Reader disabled writing
+            if (Number_of_Readers == 1) writing.claim();
+
+            mutex.release(); // Leave CS
+
+            // READ FROM DATABASE
+
+            mutex.claim(); // Enter CS
+
+            Number_of_Readers--;
+            // Last Reader enables writing
+            if (Number_of_Readers == 0) writing.release();
+
+            mutex.release(); // Leave CS
+        }
+    } // Reader
+
+    process Writer(BinarySemaphore writing)
+    {
+        while ( true )
+        {
+            writing.claim(); // Enter CS
+
+            // WRITE TO DATABASE
+
+            writing.release(); // Leave CS
+        }
+    } // Writer
+
+    main()
+    {
+        final int UNLOCKED = 1;
+
+        BinarySemaphore mutex = new BinarySemaphore(UNLOCKED);
+        BinarySemaphore writing = new BinarySemaphore(UNLOCKED);
+
+        parbegin
+            Reader(mutex, writing); ... Reader(mutex, writing); // Many Readers
+            Writer(writing); ... Writer(writing); // Many Writers
+        parend;
+    }
+} // Readers_Writers
