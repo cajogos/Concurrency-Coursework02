@@ -1,0 +1,66 @@
+Program ProducerConsumer
+{
+    final int SIZE = 10; // Size of the buffer
+
+    Items[] buffer = new Items[SIZE];
+    int in = 0;
+    int out = 0;
+
+    process Producer(BinarySemaphore mutex,
+                    GeneralSemaphore free_space,
+                    GeneralSemaphore num_items)
+    {
+        Items item;
+
+        while ( true )
+        {
+            produce(item);
+
+            free_space.claim(); // Check for empty slots
+            mutex.claim();
+            buffer[in] = item;
+            mutex.release();
+            in = (in + 1) % SIZE;
+            num_items.release(); // Indicate new data
+        }
+    }
+
+    process Consumer(BinarySemaphore mutex,
+                    GeneralSemaphore free_space,
+                    GeneralSemaphore num_items)
+    {
+        Items item;
+
+        while ( true )
+        {
+            num_items.claim(); // Check for new data
+            mutex.claim();
+            item = buffer[out];
+            mutex.release();
+            out = (out + 1) % SIZE;
+            free_space.release(); // Indicate a free slot
+
+            consume(item);
+        }
+    }
+
+    main()
+    {
+        final int UNLOCKED = 1;
+        final int LOCKED = 0;
+
+        // Buffer is claimable -> "unlocked" (UNLOCKED)
+        BinarySemaphore mutex = new BinarySemaphore(UNLOCKED);
+
+        // Nothing in buffer -> "locked" (LOCKED)
+        GeneralSemaphore num_items = new GeneralSemaphore(SIZE, LOCKED);
+
+        // all (SIZE) slots empty -> "unlocked"
+        GeneralSemaphore free_space = new GeneralSemaphore(SIZE, SIZE);
+
+        parbegin
+            Producer(mutex, free_space, num_items);
+            Consumer(mutex, free_space, num_items);
+        parend;
+    }
+} // ProducerConsumer

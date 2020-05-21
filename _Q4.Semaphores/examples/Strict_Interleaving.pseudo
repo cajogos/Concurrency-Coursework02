@@ -1,0 +1,35 @@
+Program Strict_Interleaving
+{
+    process P1(BinarySemaphore s1, BinarySemaphore s2)
+    {
+        s1.claim();
+        first_actions;
+        s2.release(); // Claims s1, Releases s2
+        s1.claim();
+        third_actions;
+        s2.release();
+    }
+
+    process P2(BinarySemaphore s1, BinarySemaphore s2)
+    {
+        s2.claim();
+        second_actions;
+        s1.release(); // Claims s2, Releases s1
+        s2.claim();
+        fourth_actions;
+    }
+
+    main()
+    {
+        final int UNLOCKED = 1;
+        final int LOCKED = 0;
+
+        BinarySemaphore s1 = new BinarySemaphore(UNLOCKED);
+        BinarySemaphore s2 = new BinarySemaphore(LOCKED);
+
+        parbegin
+            P1(s1, s2);
+            P2(s1, s2);
+        parend;
+    }
+} // Strict_Interleaving

@@ -1,0 +1,31 @@
+Program Mutual_Exclusion
+{
+    process P1(BinarySemaphore mutex)
+    {
+        mutex.claim(); // locking-protocol
+        use_critical_section;
+        mutex.release(); // unlocking-protocol
+    }
+
+    process P2(BinarySemaphore mutex)
+    {
+        while ( true )
+        {
+            mutex.claim(); // locking-protocol
+            use_critical_section;
+            mutex.release(); // unlocking-protocol
+        }
+    }
+
+    main()
+    {
+        final int UNLOCKED = 1;
+
+        BinarySemaphore mutex = new BinarySemaphore(UNLOCKED);
+
+        parbegin
+            P1(mutex);
+            P2(mutex);
+        parend;
+    }
+} // Mutual_Exclusion
