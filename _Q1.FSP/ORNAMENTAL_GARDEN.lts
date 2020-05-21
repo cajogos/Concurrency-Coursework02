@@ -1,17 +1,25 @@
 const N = 4
 range T = 0..N
 
-set VarAlpha = { value.{read[T],write[T]} }
+LOCK = ( acquire -> release -> LOCK ).
+
+set VarAlpha = { value.{read[T],write[T]}, acquire, release }
 
 VAR = VAR[0],
 VAR[u:T] = (read[u] -> VAR[u]
             | write[v: T] -> VAR[v]).
 
+|| LOCKVAR = (LOCK || VAR).
+
 TURNSTILE = (go -> RUN),
 RUN = (arrive -> INCREMENT
         | end -> TURNSTILE),
-INCREMENT = (value.read[x:T]
-        -> value.write[x+1] -> RUN
+INCREMENT = (
+        value.acquire
+        -> value.read[x:T]
+        -> value.write[x+1]
+        -> value.release
+        -> RUN
         )+VarAlpha.
 
 || GARDEN = (
