@@ -1,6 +1,6 @@
 public class ThermostatAT extends Thread {
 
-	private TemperatureController temperatureController;
+	private final TemperatureController temperatureController;
 
 	public ThermostatAT(ThreadGroup tg, String name, TemperatureController controller) {
 		super(tg, name);

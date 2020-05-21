@@ -1,5 +1,6 @@
 public class TemperatureController implements Temperatures {
 
+	// Up to 2 retries allowed (total of 3 tries)
 	static final int MAX_RETRIES = 2;
 
 	// Initial temperatures for the controller
@@ -7,70 +8,70 @@ public class TemperatureController implements Temperatures {
 	private int ffTemp = 20;
 	private int atTemp = 21;
 
-	// RULE: GF temp < FF temp
+	// RULE: Ground Floor Temp < First Floor Temp
 	public synchronized void setGFtemp(int newgfTemp) {
 		int tries = 0;
 		while (!(newgfTemp < ffTemp)) {
-			System.out.println("[WAIT]: New GF Temp [" + newgfTemp + "] IS NOT <  FF Temp [" + ffTemp + "]");
+			tries++;
+
 			try {
 				wait(500);
 			} catch (InterruptedException ignored) {
 			}
 
-			if (tries == MAX_RETRIES)
+			if (tries > MAX_RETRIES) {
 				break;
-			tries++;
+			}
 		}
 
 		if (newgfTemp < ffTemp) {
-			System.out.println("New GF temp: " + newgfTemp);
 			gfTemp = newgfTemp;
 		}
 
 		notifyAll();
 	}
 
-	// RULE: FF temp > GF temp
-	// RULE: FF temp <= AT temp
+	// RULE: First Floor Temp > Ground Floor Temp
+	// RULE: First Floor Temp <= Attic Temp
 	public synchronized void setFFtemp(int newffTemp) {
 		int tries = 0;
 		while (!(newffTemp > gfTemp) || !(newffTemp <= atTemp)) {
-			System.out.println("[WAIT]: New FF Temp [" + newffTemp + "] IS NOT >  GF Temp [" + gfTemp + "] OR IS NOT <= AT Temp [" + atTemp + "]");
+			tries++;
+
 			try {
 				wait(500);
 			} catch (InterruptedException ignored) {
 			}
 
-			if (tries == MAX_RETRIES)
+			if (tries > MAX_RETRIES) {
 				break;
-			tries++;
+			}
 		}
 
 		if ((newffTemp > gfTemp) && (newffTemp <= atTemp)) {
-			System.out.println("New FF temp: " + newffTemp);
 			ffTemp = newffTemp;
 		}
 
 		notifyAll();
 	}
 
-	// RULE: AT temp >= FF temp
+	// RULE: Attic Temp >= First Floor Temp
 	public synchronized void setATtemp(int newatTemp) {
 		int tries = 0;
 		while (!(newatTemp >= ffTemp)) {
-			System.out.println("[WAIT]: New AT Temp [" + newatTemp + "] IS NOT >= FF Temp [" + ffTemp + "]");
+			tries++;
+
 			try {
 				wait(500);
 			} catch (InterruptedException ignored) {
 			}
 
-			if (tries == MAX_RETRIES)
+			if (tries > MAX_RETRIES) {
 				break;
-			tries++;
+			}
 		}
 
 		if (newatTemp >= ffTemp) {
-			
 			atTemp = newatTemp;
 		}
 
