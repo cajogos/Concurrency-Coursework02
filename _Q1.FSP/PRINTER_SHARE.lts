@@ -1,6 +1,9 @@
 const MAX_DOCS = 3
 range DOCS_RANGE = 0..MAX_DOCS
 
+
+set SyncActions = { p.acquire, p.release }
+
 // DOC_ID
 
 PRINTER = (
@@ -8,17 +11,18 @@ PRINTER = (
 ).
 
 User = (
-	acquire -> (
-		print[DOCS_RANGE] -> release -> User
-		| cancel[DOCS_RANGE] -> release -> User
+	p.acquire -> (
+		print[DOCS_RANGE] -> p.release -> User
+		| cancel[DOCS_RANGE] -> p.release -> User
 	)
-).
+)+SyncActions.
 
 Admin = (
-	acquire -> service -> release -> Admin
-).
+	p.acquire -> service -> p.release -> Admin
+)+SyncActions.
 
 
 || PRINTER_SHARE = (
-		user1: User || user2: User || admin: Admin
-	|| { user1, user2, admin } :: PRINTER).
+	user1: User || user2: User || admin: Admin
+	|| { user1, user2, admin }::p:PRINTER
+).
