@@ -6,13 +6,14 @@ References:
 
 - https://blogs.nvidia.com/blog/2009/12/16/whats-the-difference-between-a-cpu-and-a-gpu/
 - https://www.progamerreview.com/cpu-vs-gpu/
-- https://www.infoworld.com/article/3299703/what-is-cuda-parallel-programming-for-gpus.html (LOOK AT ME)
 
 Purpose of GPU:
 
 - Run parallel code.
 - Computing for massive parallelism.
 - Break complete problems such as graphics processing into thousands or millions of separate tasks and work them out at once.
+- Run embarrassingly parallel tasks - deep learning, etc.
+  - Pleasingly parallel algorithms
 
 GPU vs CPU:
 

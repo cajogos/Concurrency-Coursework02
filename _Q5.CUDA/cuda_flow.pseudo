@@ -1,0 +1,41 @@
+// A kernel function to be run on the device
+__global__ void kernelFunction(int *a, int *b)
+{
+    // Simple power of 2 function
+    b[blockIdx.x] = a[blockIdx.x] * a[blockIdx.x];
+}
+
+#define BLOCKS 256 // Number of blocks
+int main(void)
+{
+    int *h_A, *h_B; // Host copies
+    int *d_A, *d_B; // Device copies
+
+    // Get the size needed for memory allocation
+    int SIZE = BLOCKS * sizeof(int);
+
+    // Allocate the host memory e.g. malloc()
+    h_A = (int *)malloc(SIZE);
+    h_B = (int *)malloc(SIZE);
+
+    // Initialise the array
+    many_random_integers(h_A);
+
+    // Allocate device memory e.g. cudaMalloc()
+    cudaMalloc((void **)&d_A, SIZE);
+    cudaMalloc((void **)&d_B, SIZE);
+
+    // Transfer data from Host to Device e.g. cudaMemCpy()
+    cudaMemCpy(d_A, h_A, SIZE, cudaMemCpyHostToDevice);
+
+    // Kernel execution definition and call
+    kernelFunction<<BLOCKS, 1>>(d_A, d_B);
+
+    // Transfer result from Device to Host e.g. cudaMemCpy()
+    cudaMemCpy(h_B, d_B, SIZE, cudaMemCpyDeviceToHost);
+
+    // Free-up the memory on the Host and Device e.g. free() and cudaFree()
+    free(h_A); free(h_B); cudaFree(d_A); cudaFree(d_B);
+
+    return 0;
+}
