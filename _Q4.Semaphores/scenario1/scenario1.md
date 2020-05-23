@@ -16,9 +16,41 @@ ii) Using semaphores develop a "pseudo code" program (in the style used in the l
 ## Pseudo-code
 
 ```pseudocode
+Program Scenario1
+{
+
+    process Barge(BinarySemaphore space)
+    {
+        while ( true )
+        {
+            space.claim();
+            use_mooring_space; // Critical section
+            space.release();
+        }
+    }
+
+    main()
+    {
+        final int UNLOCKED = 1;
+
+        // Moooring "space" is handled like a mutex (either available or not)
+        BinarySemaphore space = new BinarySemaphore(UNLOCKED);
+
+        parbegin
+            Barge(space);
+            ...// Several Canal "Barge" processes
+            Barge(space);
+        parend;
+    }
+
+} // Scenario1
 
 ```
 
 ### Explanation of Code
 
-- ...
+- For this scenario a Binary Semaphore was implemented as there is only one resource (mooring space) available for sharing.
+- The Semaphore `space` is used as a mutex in this example, starting by being in unlocked state (s == 1). The first Barge process will then claim the Semaphore and decrement its value (s == 0).
+- The following Barge process that tries to claim the space will go to the queue and wait its turn.
+- Once the Barge process finishes using the mooring space (the critical section) it will release it (s == 1).
+

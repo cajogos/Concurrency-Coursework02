@@ -1,0 +1,31 @@
+Program Scenario2
+{
+
+    process Barge(int id, GeneralSemaphore spaces)
+    {
+        while ( true )
+        {
+            spaces.claim();
+            use_space_inside_lock; // Critical section
+            spaces.release();
+        }
+    }
+
+
+    main()
+    {
+        final int M = 5; // Number of spaces inside the lock
+
+        // General (Counting) Semaphore to keep track of the amount of spaces
+        // All the available spaces start as unlocked (M)
+        GeneralSemaphore spaces = new GeneralSemaphore(M, M);
+
+        parbegin
+            Barge(1, spaces);
+            Barge(2, spaces);
+            ...// N Canal "Barge" processes competing for spaces inside the lock
+            Barge(N, spaces);
+        parend;
+    }
+
+} // Scenario2

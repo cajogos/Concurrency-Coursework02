@@ -1,0 +1,28 @@
+Program Scenario1
+{
+
+    process Barge(BinarySemaphore space)
+    {
+        while ( true )
+        {
+            space.claim();
+            use_mooring_space; // Critical section
+            space.release();
+        }
+    }
+
+    main()
+    {
+        final int UNLOCKED = 1;
+
+        // Moooring "space" is handled like a mutex (either available or not)
+        BinarySemaphore space = new BinarySemaphore(UNLOCKED);
+
+        parbegin
+            Barge(space);
+            ...// Several Canal "Barge" processes
+            Barge(space);
+        parend;
+    }
+
+} // Scenario1
