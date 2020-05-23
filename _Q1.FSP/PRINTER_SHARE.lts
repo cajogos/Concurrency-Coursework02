@@ -3,17 +3,20 @@ range DOCS_RANGE = 1..MAX_DOCS
 
 set SyncActions = { printer.acquire, printer.release }
 
+// Printer resource with a locking mechanism
 PRINTER = (
     acquire -> release -> PRINTER
 ).
 
+// User can print or cancel a document using its ID
 User = (
     printer.acquire -> (
-        print[DOCS_RANGE] -> printer.release -> User
+          print[DOCS_RANGE] -> printer.release -> User
         | cancel[DOCS_RANGE] -> printer.release -> User
     )
 )+SyncActions.
 
+// Admin can only service the printer
 Admin = (
     printer.acquire -> service -> printer.release -> Admin
 )+SyncActions.
